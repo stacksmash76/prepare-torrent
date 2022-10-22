@@ -34,12 +34,14 @@ where `$TIMESTAMP`, `$INPUT_FILE` and `$TEMP_OUTPUT_FILE` are variables.
 11. After the process has finished (regardless of success/error), the images from the `.screens` folder are wiped and the directory is deleted.
 
 This process is virtually the same for multiple files except:
-   - Three files are sampled for screenshots instead of one (the first, the "middle file" and the last file; in no particular order!)
+   - Three files are sampled for screenshots instead of one (the first, the "middle file" and the last file; in ascending order)
    - The screenshot intervals are computed in rolling order (the timestamp of the next screenshot _always_ progresses, even between files)
 
 Considering such an analysis might be computationally expensive on low-power CPUs, the analysis can be disabled by setting `Config.screenshots_analyze` to `False`.
 
 ## Installation
+Note: You'll need MediaInfo and at least Python 3.7+ installed.
+
 1. `wget https://github.com/stacksmash76/prepare-torrent/archive/refs/heads/master.zip && unzip master.zip && rm master.zip`
 2. `cd prepare-torrent-master`
 3. If you wish to have the analysis feature, you will have to install around 100MB of Python packages using `pip install -r requirements.txt`

@@ -148,7 +148,7 @@ class Glue:
             t.name = self._get_torrent_name(str(self.media_file.path.name))
         else:
             t.name = self._get_torrent_name(str(self.path.name))
-            t.filepaths = [str(p.path) for p in self.media_dir.file_paths]
+            t.filepaths = [str(p) for p in self.media_dir.paths]
 
         torrent_filename = file_path / (t.name + ".torrent")
         print(f' --> generated torrent filename: "{torrent_filename.name}"')
@@ -193,13 +193,13 @@ class Glue:
         if self.media_file is not None:
             result += f"[mediainfo]\n{self.media_file.mediainfo.text}\n[/mediainfo]\n\n"
         elif self.media_dir is not None:
-            for f in self.media_dir.file_metadata:
-                result += f"[mediainfo]\n{f.mediainfo.text}\n[/mediainfo]\n\n"
+            f = self.media_dir.file_metadata[0]
+            result += f"[mediainfo]\n{f.mediainfo.text}\n[/mediainfo]\n\n"
 
         result += "[screens]\n\n"
         for submission in self.screenshot_submissions:
             web_url, thumbnail_url = submission["web_url"], submission["thumbnail_url"]
-            result += f"[url={web_url}][img]{thumbnail_url}[/img][/url]\n"
+            result += f"[url={web_url}][img]{thumbnail_url}[/img][/url]"
 
         print("=" * 24 + "[ DESCRIPTION ]" + "=" * 24)
         print(result)

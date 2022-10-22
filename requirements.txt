@@ -1,0 +1,10 @@
+image_quality==1.2.7
+numpy==1.23.3
+Pillow==9.2.0
+pyimgbox==1.0.5
+pymediainfo==5.1.0
+scipy~=1.9.2
+torf==4.0.4
+scikit-image~=0.19.3
+libsvm~=3.23.0.4
+opencv-python~=4.6.0.66

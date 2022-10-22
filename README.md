@@ -13,25 +13,25 @@ The algorithm consists of three components:
 
 
 How the screenshot process works for a single file:
-0. A `.screens` directory is created in the folder where the torrent data is located (required because of `ffmpeg`)
-1. Video duration is determined by MediaInfo
+1. A `.screens` directory is created in the folder where the torrent data is located (required because of `ffmpeg`)
+2. Video duration is determined by MediaInfo
    - If `Config.screenshots_no_spoilers` is configured to `True`, then the duration is cut in half and only the first part is considered
-2. The considered video duration is divided into `Config.screenshots_n_preprocess` parts (intervals), i.e. the number of screenshots to be taken.
-3. The screenshots are then taken at the intervals generated in step 2. using the command: `ffmpeg -y -loglevel level+error -ss $TIMESTAMP -i $INPUT_FILE -frames:v 1 -q:v 10 -c:v png $TEMP_OUTPUT_FILE.png`
+3. The considered video duration is divided into `Config.screenshots_n_preprocess` parts (intervals), i.e. the number of screenshots to be taken.
+4. The screenshots are then taken at the intervals generated in step 2. using the command: `ffmpeg -y -loglevel level+error -ss $TIMESTAMP -i $INPUT_FILE -frames:v 1 -q:v 10 -c:v png $TEMP_OUTPUT_FILE.png`
 where `$TIMESTAMP`, `$INPUT_FILE` and `$TEMP_OUTPUT_FILE` are variables.
-4. The taken images' file sizes are collected and their mean and standard deviations are computed.
-5. The files are sorted by file size in *descending* order.
-6. If any of the file sizes deviates more or less than `SD * 1.25`, then they are taken out of consideration as long as the number of taken-out-consideration screenshots is smaller than `Config.screenshots_n_outlier_prunes`.
-7. Then, the image scoring process is parallelized into `number of CPU cores * 0.85` processes (expressed as a whole non-decimal number).
+5. The taken images' file sizes are collected and their mean and standard deviations are computed.
+6. The files are sorted by file size in *descending* order.
+7. If any of the file sizes deviates more or less than `SD * 1.25`, then they are taken out of consideration as long as the number of taken-out-consideration screenshots is smaller than `Config.screenshots_n_outlier_prunes`.
+8. Then, the image scoring process is parallelized into `number of CPU cores * 0.85` processes (expressed as a whole non-decimal number).
    1. A score of the image's file size is calculated using the formula:
       - If `Config.screenshots_analysis_theoretical_fs` is set to `True`: `25 * (file_size_in_bytes / 10_megabytes_in_bytes)`
       - If `Config.screenshots_analysis_theoretical_fs` is set to `False`: `25 * (file_size_in_bytes / maximal_file_size_from_screens_dir)`
    2. (For computational purposes) The image is resized down to 1280px in case it's larger than 1280px (while preserving aspect ratio)
    3. The BRISQUE score is computed on the image using the formula `55 * ((100 - min(100, max(0, brisque(image)))) / 100)` (Note: The perfect BRISQUE score is 0)
    4. The sharpness score is computed using the formula `20 * (sharpness(full_image) / sqrt(2))` (Note: The maximal value of the sharpness metric is sqrt(2))
-8. The final score is computed by adding the 3 component scores together. The maximum score is 100 (unless `Config.screenshots_analysis_theoretical_fs` is set to `True`). **In short, the BRISQUE score contributes 55%, the sharpness score 20% and the file size 25% to the final score.**
-9. After the final score has been computed, then we pick the top-`K` results to upload. (`K` here being `Config.screenshots_n_upload`)
-10. After the process has finished (regardless of success/error), the images from the `.screens` folder are wiped and the directory is deleted.
+9. The final score is computed by adding the 3 component scores together. The maximum score is 100 (unless `Config.screenshots_analysis_theoretical_fs` is set to `True`). **In short, the BRISQUE score contributes 55%, the sharpness score 20% and the file size 25% to the final score.**
+10. After the final score has been computed, then we pick the top-`K` results to upload. (`K` here being `Config.screenshots_n_upload`)
+11. After the process has finished (regardless of success/error), the images from the `.screens` folder are wiped and the directory is deleted.
 
 This process is virtually the same for multiple files except:
    - Three files are sampled for screenshots instead of one (the first, the "middle file" and the last file; in no particular order!)
